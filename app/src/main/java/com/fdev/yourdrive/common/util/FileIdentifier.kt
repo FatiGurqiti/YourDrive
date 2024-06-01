@@ -1,4 +1,4 @@
-package com.fdev.yourdrive.util
+package com.fdev.yourdrive.common.util
 
 fun String.isImage(): Boolean {
     val acceptedImageTypes = listOf(".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif")

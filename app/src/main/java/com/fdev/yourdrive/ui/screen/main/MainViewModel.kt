@@ -1,11 +1,14 @@
 package com.fdev.yourdrive
 
 import android.graphics.BitmapFactory
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fdev.yourdrive.domain.enum.FileType
 import com.fdev.yourdrive.domain.model.FileData
-import com.fdev.yourdrive.util.isImage
+import com.fdev.yourdrive.common.util.isImage
+import com.fdev.yourdrive.ui.screen.base.BaseViewModel
+import com.fdev.yourdrive.ui.screen.main.MainEffect
+import com.fdev.yourdrive.ui.screen.main.MainEvent
+import com.fdev.yourdrive.ui.screen.main.MainState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jcifs.CIFSContext
 import jcifs.config.PropertyConfiguration
@@ -14,17 +17,19 @@ import jcifs.smb.NtlmPasswordAuthenticator
 import jcifs.smb.SmbFile
 import jcifs.smb.SmbFileInputStream
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
-    val _images = MutableStateFlow<MutableList<FileData>>(mutableListOf())
-    private val local_images = mutableListOf<FileData>()
-
+class MainViewModel @Inject constructor() : BaseViewModel<MainState, MainEvent, MainEffect>() {
     init {
         getImages()
+    }
+
+    override val initialState: MainState
+        get() = MainState()
+
+    override fun onEvent(event: MainEvent) {
     }
 
     private fun getImages() {
@@ -44,11 +49,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     if (!stringFile.contains("._") && stringFile.isImage()) {
                         val rawFileName = file.name
                         val fileName = rawFileName.replace("mytestfolder", "")
+
+                        println("hajde: ${fileName}")
                         loadImageFromSamba(fileName, ct)
                     }
                 }
-
-                _images.value = local_images
             }
         } catch (e: Exception) {
             println("hajde: ${e}")
@@ -74,8 +79,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
                         source = bitmap
                     )
 
-                    _images.value.add(fileType)
-                    local_images.add(fileType)
+                    val items = state.value.album.plus(fileType)
+                    setState { copy(album = items) }
                 } else {
                     // Handle error - not a file
                  }
