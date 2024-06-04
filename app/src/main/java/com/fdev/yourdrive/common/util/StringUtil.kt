@@ -13,3 +13,10 @@ fun String.isImage(): Boolean {
 
     return value
 }
+
+fun String.pathToName(): String? {
+    if (!this.contains("/")) return null
+
+    val lastSlashIndex = this.lastIndexOf("/") +1
+    return this.substring(lastSlashIndex)
+}
