@@ -17,7 +17,6 @@ import jcifs.smb.NtlmPasswordAuthenticator
 import jcifs.smb.SmbFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.time.LocalDateTime
@@ -35,7 +34,7 @@ class MainViewModel @Inject constructor() : BaseViewModel<MainState, MainEvent, 
     fun setup(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             getRemoteImages().collect { remoteImages ->
-                getLocalImages(context).take(10)
+                getLocalImages(context)
                     .collect { localImages ->
                         val images = localImages.filter { it.name !in remoteImages }
 
