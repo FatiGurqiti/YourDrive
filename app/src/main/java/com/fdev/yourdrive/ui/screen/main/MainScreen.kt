@@ -21,7 +21,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.fdev.yourdrive.MainViewModel
 import com.fdev.yourdrive.ui.theme.YourDriveTheme
 
 @OptIn(ExperimentalFoundationApi::class)

@@ -20,3 +20,7 @@ fun String.pathToName(): String? {
     val lastSlashIndex = this.lastIndexOf("/") +1
     return this.substring(lastSlashIndex)
 }
+
+fun String.isSupportedFile() : Boolean {
+    return !contains("._") && isImage()
+}
