@@ -22,7 +22,8 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            backupManager.backup(NetworkAuth("","",""))
+            val networkAuth = NetworkAuth("fati","4105","smb://fati/sambashare/mytestfolder/")
+            backupManager.backup(networkAuth)
         }
     }
 }
