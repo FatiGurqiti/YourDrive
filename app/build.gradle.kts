@@ -71,6 +71,9 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.0-beta02")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
+    // accompanist
+    implementation ("com.google.accompanist:accompanist-permissions:0.34.0")
+
     // jcifs
     implementation ("eu.agno3.jcifs:jcifs-ng:2.1.2")
 

@@ -7,8 +7,8 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.fdev.yourdrive.ui.screen.main.MainScreen
-import com.fdev.yourdrive.ui.screen.main.MainViewModel
+import com.fdev.yourdrive.presentation.screen.main.MainScreen
+import com.fdev.yourdrive.presentation.screen.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
