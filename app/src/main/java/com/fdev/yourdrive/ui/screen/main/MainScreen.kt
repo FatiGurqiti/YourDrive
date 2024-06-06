@@ -7,13 +7,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.fdev.yourdrive.ui.navigation.Screens
 import com.fdev.yourdrive.ui.navigation.YourDriveNavigation
 import com.fdev.yourdrive.ui.theme.YourDriveTheme
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(viewModel: MainViewModel) {
     val state: MainState by viewModel.state.collectAsStateWithLifecycle()
 
     YourDriveTheme {
