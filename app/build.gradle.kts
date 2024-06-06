@@ -79,6 +79,9 @@ dependencies {
     implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
     kapt("com.google.dagger:hilt-android-compiler:2.49")
 
+    // Data Store
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
     // Test
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
