@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             viewModel.state.collect {
-                keepSplash.value = it.initialScreen != null
+                keepSplash.value = it.keepSplash
             }
         }
 

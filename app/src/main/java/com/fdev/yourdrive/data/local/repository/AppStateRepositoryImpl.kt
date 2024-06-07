@@ -5,6 +5,7 @@ import com.fdev.yourdrive.domain.dataStore.PreferenceDataStore
 import com.fdev.yourdrive.domain.repository.AppStateRepository
 
 class AppStateRepositoryImpl(private val dataStore: PreferenceDataStore): AppStateRepository {
+
     companion object {
         const val FIRST_LOAD = "firstLoad"
     }

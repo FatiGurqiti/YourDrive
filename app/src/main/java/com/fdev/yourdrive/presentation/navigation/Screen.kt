@@ -2,7 +2,7 @@ package com.fdev.yourdrive.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
-object Screens {
+object Screen {
 
     @Serializable
     object Permission

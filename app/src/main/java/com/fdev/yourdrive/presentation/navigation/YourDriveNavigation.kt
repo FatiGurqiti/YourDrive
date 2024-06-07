@@ -18,19 +18,19 @@ fun YourDriveNavigation(startDestination: Any) {
         startDestination = startDestination
     ) {
 
-        composable<Screens.Permission> {
+        composable<Screen.Permission> {
             PermissionScreen()
         }
 
-        composable<Screens.Onboarding> {
+        composable<Screen.Onboarding> {
             OnBoardingScreen(navController = navController)
         }
 
-        composable<Screens.Connection> {
+        composable<Screen.Connection> {
             ConnectionScreen()
         }
 
-        composable<Screens.Dashboard> {
+        composable<Screen.Dashboard> {
             DashboardScreen()
         }
     }

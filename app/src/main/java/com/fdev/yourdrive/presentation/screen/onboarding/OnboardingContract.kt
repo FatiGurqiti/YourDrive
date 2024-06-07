@@ -6,6 +6,10 @@ import com.fdev.yourdrive.presentation.screen.base.ViewState
 
 class OnboardingState : ViewState()
 
-sealed class OnboardingEvent : ViewEvent()
+sealed class OnboardingEvent : ViewEvent(){
+    data object ChangeFirstLaunchStatus: OnboardingEvent()
+}
 
-sealed class OnboardingEffect : ViewEffect()
+sealed class OnboardingEffect : ViewEffect(){
+    data object RedirectToConnection: OnboardingEffect()
+}
