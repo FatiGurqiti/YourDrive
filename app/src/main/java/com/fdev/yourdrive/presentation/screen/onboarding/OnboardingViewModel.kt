@@ -2,6 +2,7 @@ package com.fdev.yourdrive.presentation.screen.onboarding
 
 import androidx.lifecycle.viewModelScope
 import com.fdev.yourdrive.domain.usecase.UpdateFirstLoadUseCase
+import com.fdev.yourdrive.presentation.navigation.Screen
 import com.fdev.yourdrive.presentation.screen.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -14,7 +15,10 @@ class OnboardingViewModel @Inject constructor(
 
     override fun onEvent(event: OnboardingEvent) {
         when (event) {
-            OnboardingEvent.ChangeFirstLaunchStatus -> changeFirstLaunchStatus()
+            is OnboardingEvent.OnFinishOnboarding -> {
+                changeFirstLaunchStatus()
+                permissionsCheck(event.value)
+            }
         }
     }
 
@@ -24,7 +28,14 @@ class OnboardingViewModel @Inject constructor(
     private fun changeFirstLaunchStatus() {
         viewModelScope.launch {
             updateFirstLoadUseCase()
-            OnboardingEffect.RedirectToConnection.setEffect()
         }
+    }
+
+    private fun permissionsCheck(value: Map<String, Boolean>) {
+        val allPermissionsGranted = !value.values.contains(false)
+        val navigationScreen: Any = if (allPermissionsGranted) Screen.Connection
+        else Screen.Permission
+
+        OnboardingEffect.Navigate(navigationScreen).setEffect()
     }
 }
