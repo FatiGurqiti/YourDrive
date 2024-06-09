@@ -6,6 +6,13 @@ import com.fdev.yourdrive.presentation.screen.base.ViewState
 
 class PermissionState : ViewState()
 
-sealed class PermissionEvent : ViewEvent()
+sealed class PermissionEvent : ViewEvent() {
+    data object RequirePermission : PermissionEvent()
+    data object OnPermissionsGranted : PermissionEvent()
+}
 
-sealed class PermissionEffect : ViewEffect()
+sealed class PermissionEffect : ViewEffect() {
+    data object NavigateToConnection : PermissionEffect()
+    data object NavigateToDashboard : PermissionEffect()
+    data object OpenAppSettings : PermissionEffect()
+}

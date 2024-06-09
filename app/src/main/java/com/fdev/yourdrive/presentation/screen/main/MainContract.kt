@@ -11,7 +11,10 @@ data class MainState(
 ) : ViewState()
 
 sealed class MainEvent : ViewEvent() {
-    data class SetPermissionsStatus(val value: Boolean): MainEvent()
+    data class SetPermissionsStatus(val value: Boolean) : MainEvent()
+    data object InitialPermissionCheck : MainEvent()
 }
 
-sealed class MainEffect : ViewEffect()
+sealed class MainEffect : ViewEffect() {
+    data object CheckPermission : MainEffect()
+}

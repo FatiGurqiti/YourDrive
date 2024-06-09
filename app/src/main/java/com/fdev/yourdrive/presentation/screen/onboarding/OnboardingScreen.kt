@@ -32,7 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.fdev.yourdrive.R
-import com.fdev.yourdrive.presentation.composable.permission.permissions
+import com.fdev.yourdrive.common.manager.permissionManager.PermissionManager.permissions
 import kotlinx.coroutines.flow.Flow
 
 @Composable

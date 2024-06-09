@@ -6,4 +6,7 @@
     <string name="setup_network_drive">Don\'t know how to setup a network drive?</string>
     <string name="me_neither">Me neither. I\'m am app, I can\'t do everything. Just Google it.</string>
     <string name="lets_go">Let\'s GO!</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="permission_text">YourDrive needs access to photos and videos in order to process.</string>
+    <string name="go_to_settings">Go to Settings</string>
 </resources>

@@ -15,17 +15,18 @@ class MainViewModel @Inject constructor(
 
     private val connectionActive = false // TODO("Implement this")
 
+    init {
+        setupInitialPage()
+    }
+
     override val initialState: MainState
         get() = MainState()
 
     override fun onEvent(event: MainEvent) {
         when (event) {
             is MainEvent.SetPermissionsStatus -> setPermissionsStatus(event.value)
+            MainEvent.InitialPermissionCheck -> initialPermissionCheck()
         }
-    }
-
-    init {
-        setupInitialPage()
     }
 
     private fun setupInitialPage() {
@@ -40,6 +41,14 @@ class MainViewModel @Inject constructor(
 
                 setState { copy(initialScreen = screen, keepSplash = false) }
             }
+        }
+    }
+
+    private fun initialPermissionCheck(){
+        viewModelScope.launch {
+        if (getFirstLoadUseCase()) return@launch
+
+            MainEffect.CheckPermission.setEffect()
         }
     }
 
