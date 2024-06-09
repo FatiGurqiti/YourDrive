@@ -9,4 +9,9 @@
     <string name="permission_required">Permission Required</string>
     <string name="permission_text">YourDrive needs access to photos and videos in order to process.</string>
     <string name="go_to_settings">Go to Settings</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="user_name">Username</string>
+    <string name="remote_url">Remote URL</string>
+    <string name="auto_backup">Auto Backup</string>
+    <string name="connect">Connect</string>
 </resources>

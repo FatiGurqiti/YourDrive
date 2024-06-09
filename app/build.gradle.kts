@@ -69,10 +69,10 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.navigation:navigation-compose:2.8.0-beta02")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("androidx.compose.material:material-icons-extended")
 
-    // accompanist
-    implementation ("com.google.accompanist:accompanist-permissions:0.34.0")
+    // KotlinX
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     // jcifs
     implementation ("eu.agno3.jcifs:jcifs-ng:2.1.2")

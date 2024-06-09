@@ -1,5 +1,7 @@
 package com.fdev.yourdrive.common.util
 
+val String.Companion.Empty: String get() = ""
+
 fun String.isImage(): Boolean {
     val acceptedImageTypes = listOf(".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif")
     var value = false
