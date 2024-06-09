@@ -32,23 +32,23 @@ class MainViewModel @Inject constructor(
     private fun setupInitialPage() {
         viewModelScope.launch {
             state.collect {
-                val screen : Any = when {
+                val screen: Any = when {
                     getFirstLoadUseCase() -> Screen.Onboarding
-                    !it.permissionsGiven -> Screen.Permission
+                    it.permissionsGiven == false -> Screen.Permission
                     connectionActive -> Screen.Dashboard
                     else -> Screen.Connection
                 }
 
-                setState { copy(initialScreen = screen, keepSplash = false) }
+                setState { copy(initialScreen = screen) }
             }
         }
     }
 
-    private fun initialPermissionCheck(){
+    private fun initialPermissionCheck() {
         viewModelScope.launch {
-        if (getFirstLoadUseCase()) return@launch
-
-            MainEffect.CheckPermission.setEffect()
+            if (!getFirstLoadUseCase()) {
+                MainEffect.CheckPermission.setEffect()
+            }
         }
     }
 

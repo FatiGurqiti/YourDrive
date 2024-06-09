@@ -6,8 +6,7 @@ import com.fdev.yourdrive.presentation.screen.base.ViewState
 
 data class MainState(
     val initialScreen: Any? = null,
-    val keepSplash: Boolean = true, // Show splash screen
-    val permissionsGiven: Boolean = false
+    val permissionsGiven: Boolean? = null
 ) : ViewState()
 
 sealed class MainEvent : ViewEvent() {

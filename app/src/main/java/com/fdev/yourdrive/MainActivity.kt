@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
@@ -26,17 +27,20 @@ class MainActivity : ComponentActivity() {
         initSplash()
     }
 
-    private fun initSplash(){
+    private fun initSplash() {
         val keepSplash = mutableStateOf(true)
+        setKeepSplashState(keepSplash)
 
+        installSplashScreen().setKeepOnScreenCondition {
+            keepSplash.value
+        }
+    }
+
+    private fun setKeepSplashState(keepSplash: MutableState<Boolean>) {
         lifecycleScope.launch {
             viewModel.state.collect {
-                keepSplash.value = it.keepSplash
+                keepSplash.value = it.permissionsGiven != null && it.initialScreen != null
             }
-        }
-
-        installSplashScreen().setKeepOnScreenCondition{
-            keepSplash.value
         }
     }
 
