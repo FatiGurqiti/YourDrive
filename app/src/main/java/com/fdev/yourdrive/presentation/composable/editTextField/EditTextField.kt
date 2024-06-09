@@ -23,6 +23,7 @@ fun EditTextField(
         .fillMaxWidth()
         .clip(RoundedCornerShape(12.dp)),
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    isError: Boolean = false,
     text: String,
     onValueChange: (String) -> Unit,
     label: @Composable () -> Unit
@@ -32,7 +33,8 @@ fun EditTextField(
         onValueChange = onValueChange,
         label = label,
         keyboardOptions = keyboardOptions,
-        modifier = modifier
+        modifier = modifier,
+        isError = isError
     )
 }
 

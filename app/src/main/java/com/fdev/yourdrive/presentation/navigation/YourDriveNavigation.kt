@@ -24,7 +24,7 @@ fun YourDriveNavigation(startDestination: Any, navController: NavHostController)
         }
 
         composable<Screen.Connection> {
-            ConnectionScreen()
+            ConnectionScreen(navController = navController)
         }
 
         composable<Screen.Dashboard> {

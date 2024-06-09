@@ -19,10 +19,12 @@ fun String.isImage(): Boolean {
 fun String.pathToName(): String? {
     if (!this.contains("/")) return null
 
-    val lastSlashIndex = this.lastIndexOf("/") +1
+    val lastSlashIndex = this.lastIndexOf("/") + 1
     return this.substring(lastSlashIndex)
 }
 
-fun String.isSupportedFile() : Boolean {
+fun String.isSupportedFile(): Boolean {
     return !contains("._") && isImage()
 }
+
+fun String.setNullIfEmpty() = this.ifEmpty { null }

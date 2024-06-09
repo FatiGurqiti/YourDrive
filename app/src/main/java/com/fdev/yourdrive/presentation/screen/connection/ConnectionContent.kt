@@ -11,10 +11,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,22 +26,26 @@ import com.fdev.yourdrive.presentation.composable.editTextField.EditTextField
 import com.fdev.yourdrive.presentation.composable.editTextField.PasswordTextField
 
 @Composable
-fun ConnectionContent(onConnectClicked: () -> Unit) {
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-    var url by rememberSaveable { mutableStateOf(String.Empty) }
-    var username by rememberSaveable { mutableStateOf(String.Empty) }
-    var password by rememberSaveable { mutableStateOf(String.Empty) }
-    var autoBackupCheck by rememberSaveable { mutableStateOf(false) }
+fun ConnectionContent(
+    showDialog: Boolean,
+    autoBackupChecked: Boolean,
+    remoteURLError: Boolean,
+    remoteURL: String,
+    username: String,
+    password: String,
+    onConnectClicked: () -> Unit,
+    onDialogConfirmed: () -> Unit,
+    onDialogDeclined: () -> Unit,
+    onRemoteURLEntry: (String) -> Unit,
+    onUsernameEntry: (String) -> Unit,
+    onPasswordEntry: (String) -> Unit,
+    onCheckboxChecked: (Boolean) -> Unit,
+) {
 
     if (showDialog) {
         AutoBackupDialog(
-            onConfirm = {
-                autoBackupCheck = true
-                showDialog = false
-            },
-            onDecline = {
-                showDialog = false
-            }
+            onConfirm = onDialogConfirmed,
+            onDecline = onDialogDeclined
         )
     }
 
@@ -72,29 +72,29 @@ fun ConnectionContent(onConnectClicked: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(22.dp)
         ) {
             EditTextField(
-                text = url,
-                onValueChange = { url = it }) {
+                text = remoteURL,
+                onValueChange = onRemoteURLEntry,
+                isError = remoteURLError
+            ) {
                 Text(stringResource(id = R.string.remote_url))
             }
 
             EditTextField(
                 text = username,
-                onValueChange = { username = it }) {
+                onValueChange = onUsernameEntry
+            ) {
                 Text(stringResource(id = R.string.user_name))
             }
 
             Column {
                 PasswordTextField(
                     password = password,
-                    onValueChange = { password = it }
+                    onValueChange = onPasswordEntry
                 ) {
                     Text(stringResource(id = R.string.enter_password))
                 }
 
-                CheckboxField(isChecked = autoBackupCheck, onCheckedChange = {
-                    showDialog = it
-                    if (!it) autoBackupCheck = false
-                })
+                CheckboxField(isChecked = autoBackupChecked, onCheckedChange = onCheckboxChecked)
             }
         }
 
@@ -110,5 +110,19 @@ fun ConnectionContent(onConnectClicked: () -> Unit) {
 @Preview
 @Composable
 fun ConnectionContentPreview() {
-    ConnectionContent {}
+    ConnectionContent(
+        showDialog = true,
+        autoBackupChecked = true,
+        remoteURLError = true,
+        remoteURL = String.Empty,
+        username = String.Empty,
+        password = String.Empty,
+        onConnectClicked = {},
+        onDialogConfirmed = {},
+        onDialogDeclined = {},
+        onRemoteURLEntry = {},
+        onUsernameEntry = {},
+        onPasswordEntry = {},
+        onCheckboxChecked = {}
+    )
 }

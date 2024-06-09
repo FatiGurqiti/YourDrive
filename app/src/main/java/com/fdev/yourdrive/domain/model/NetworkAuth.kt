@@ -1,7 +1,7 @@
 package com.fdev.yourdrive.domain.model
 
-data class NetworkAuth (
-    val userName : String?,
-    val password : String?,
-    val remoteURL: String
+data class NetworkAuth(
+    var username: String?,
+    var password: String?,
+    var remoteURL: String
 )

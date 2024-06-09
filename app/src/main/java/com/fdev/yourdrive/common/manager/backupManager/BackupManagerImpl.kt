@@ -32,7 +32,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
     private fun getRemoteImages(networkAuth: NetworkAuth) = flow {
         try {
             val baseCxt: CIFSContext = BaseContext(PropertyConfiguration(System.getProperties()))
-            val auth = NtlmPasswordAuthenticator(networkAuth.userName, networkAuth.password)
+            val auth = NtlmPasswordAuthenticator(networkAuth.username, networkAuth.password)
             val ct = baseCxt.withCredentials(auth)
             val smbFile = SmbFile(networkAuth.remoteURL, ct)
 
@@ -104,7 +104,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
         val remoteURL = "${networkAuth.remoteURL}/$fileName"
 
         val baseCxt: CIFSContext = BaseContext(PropertyConfiguration(System.getProperties()))
-        val auth = NtlmPasswordAuthenticator(networkAuth.userName, networkAuth.password)
+        val auth = NtlmPasswordAuthenticator(networkAuth.username, networkAuth.password)
         val ct = baseCxt.withCredentials(auth)
         val destinationFile = SmbFile(remoteURL, ct)
 
