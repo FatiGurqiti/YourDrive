@@ -14,4 +14,8 @@
     <string name="remote_url">Remote URL</string>
     <string name="auto_backup">Auto Backup</string>
     <string name="connect">Connect</string>
+    <string name="auto_backup_dialog_title">Allow storing credentials</string>
+    <string name="auto_backup_dialog_message">"Allow YourDrive to store your Drive's credentials encrypted for automatic backup management. Your credentials will be encrypted, kept on a safe environment, and won't be accessible by third parties."</string>
+    <string name="allow">Allow</string>
+    <string name="decline">Decline</string>
 </resources>

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.fdev.yourdrive.R
 import com.fdev.yourdrive.common.util.Empty
 import com.fdev.yourdrive.presentation.composable.checkbox.CheckboxField
+import com.fdev.yourdrive.presentation.composable.dialog.AutoBackupDialog
 import com.fdev.yourdrive.presentation.composable.editTextField.EditTextField
 import com.fdev.yourdrive.presentation.composable.editTextField.PasswordTextField
 
@@ -36,8 +37,16 @@ fun ConnectionContent(onConnectClicked: () -> Unit) {
     var password by rememberSaveable { mutableStateOf(String.Empty) }
     var autoBackupCheck by rememberSaveable { mutableStateOf(false) }
 
-    if (showDialog){
-        //show Dialog
+    if (showDialog) {
+        AutoBackupDialog(
+            onConfirm = {
+                autoBackupCheck = true
+                showDialog = false
+            },
+            onDecline = {
+                showDialog = false
+            }
+        )
     }
 
     Column(
@@ -83,7 +92,8 @@ fun ConnectionContent(onConnectClicked: () -> Unit) {
                 }
 
                 CheckboxField(isChecked = autoBackupCheck, onCheckedChange = {
-                    autoBackupCheck = it
+                    showDialog = it
+                    if (!it) autoBackupCheck = false
                 })
             }
         }
@@ -100,7 +110,5 @@ fun ConnectionContent(onConnectClicked: () -> Unit) {
 @Preview
 @Composable
 fun ConnectionContentPreview() {
-    ConnectionContent {
-
-    }
+    ConnectionContent {}
 }
