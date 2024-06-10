@@ -4,14 +4,19 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
 import com.fdev.yourdrive.common.util.isSupportedFile
+import com.fdev.yourdrive.domain.enumeration.Result
+import com.fdev.yourdrive.domain.manager.BackupManager
 import com.fdev.yourdrive.domain.model.MediaItem
 import com.fdev.yourdrive.domain.model.NetworkAuth
 import jcifs.CIFSContext
 import jcifs.config.PropertyConfiguration
 import jcifs.context.BaseContext
 import jcifs.smb.NtlmPasswordAuthenticator
+import jcifs.smb.SmbAuthException
 import jcifs.smb.SmbFile
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.time.LocalDateTime
 
@@ -21,12 +26,47 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
         private const val FILE_NAME = "YourDrive"
     }
 
+    private lateinit var smbFile: SmbFile
+
+    override suspend fun connect(networkAuth: NetworkAuth): Result {
+        return try {
+            withContext(Dispatchers.IO) {
+                val baseCxt: CIFSContext =
+                    BaseContext(PropertyConfiguration(System.getProperties()))
+                val auth = NtlmPasswordAuthenticator(networkAuth.username, networkAuth.password)
+                val ct = baseCxt.withCredentials(auth)
+                val smbFile = SmbFile(networkAuth.remoteURL, ct)
+
+                createFileIfNeeded(networkAuth.remoteURL, smbFile, ct)
+                Result.SUCCESS
+            }
+        } catch (e: SmbAuthException) {
+            Result.FAILED(e.message.toString())
+        } catch (e: Exception) {
+            Result.FAILED(e.message.toString())
+        }
+    }
+
+    private fun createFileIfNeeded(url: String, smbFile: SmbFile, ct: CIFSContext) {
+        if (url.contains(FILE_NAME)) {  // Already in the correct folder
+            smbFile.connect()
+            this.smbFile = smbFile
+            return
+        }
+
+        val newURL = "${url}${FILE_NAME}"
+        val newFolder = SmbFile(newURL, ct)
+        if (!newFolder.exists()) newFolder.mkdir()
+        newFolder.connect()
+        this.smbFile = newFolder
+    }
+
     override suspend fun backup(networkAuth: NetworkAuth) {
         getRemoteImages(networkAuth).collect { remoteImages ->
             getLocalImages(context).collect { localImages ->
                 iterateFiles(localImages, remoteImages, networkAuth)
             }
-        } 
+        }
     }
 
     private fun getRemoteImages(networkAuth: NetworkAuth) = flow {

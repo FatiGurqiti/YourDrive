@@ -21,33 +21,38 @@ import androidx.compose.ui.unit.sp
 import com.fdev.yourdrive.R
 import com.fdev.yourdrive.common.util.Empty
 import com.fdev.yourdrive.presentation.composable.checkbox.CheckboxField
-import com.fdev.yourdrive.presentation.composable.dialog.AutoBackupDialog
 import com.fdev.yourdrive.presentation.composable.editTextField.EditTextField
 import com.fdev.yourdrive.presentation.composable.editTextField.PasswordTextField
+import com.fdev.yourdrive.presentation.screen.connection.composable.ConnectionDialogs
 
 @Composable
 fun ConnectionContent(
-    showDialog: Boolean,
+    showBackupDialog: Boolean,
+    showErrorDialog: Boolean,
     autoBackupChecked: Boolean,
     remoteURLError: Boolean,
+    errorDialogMessage: String,
     remoteURL: String,
     username: String,
     password: String,
     onConnectClicked: () -> Unit,
-    onDialogConfirmed: () -> Unit,
-    onDialogDeclined: () -> Unit,
+    onBackupDialogConfirmed: () -> Unit,
+    onBackupDialogDeclined: () -> Unit,
+    onErrorDialogDismissed: () -> Unit,
     onRemoteURLEntry: (String) -> Unit,
     onUsernameEntry: (String) -> Unit,
     onPasswordEntry: (String) -> Unit,
     onCheckboxChecked: (Boolean) -> Unit,
 ) {
 
-    if (showDialog) {
-        AutoBackupDialog(
-            onConfirm = onDialogConfirmed,
-            onDecline = onDialogDeclined
-        )
-    }
+    ConnectionDialogs(
+        errorDialogMessage = errorDialogMessage,
+        showErrorDialog = showErrorDialog,
+        showBackupDialog = showBackupDialog,
+        onErrorDialogDismissed = onErrorDialogDismissed,
+        onBackupDialogConfirmed = onBackupDialogConfirmed,
+        onBackupDialogDeclined = onBackupDialogDeclined
+    )
 
     Column(
         modifier = Modifier
@@ -111,15 +116,18 @@ fun ConnectionContent(
 @Composable
 fun ConnectionContentPreview() {
     ConnectionContent(
-        showDialog = true,
+        showBackupDialog = true,
+        showErrorDialog = false,
         autoBackupChecked = true,
         remoteURLError = true,
+        errorDialogMessage = String.Empty,
         remoteURL = String.Empty,
         username = String.Empty,
         password = String.Empty,
         onConnectClicked = {},
-        onDialogConfirmed = {},
-        onDialogDeclined = {},
+        onBackupDialogConfirmed = {},
+        onBackupDialogDeclined = {},
+        onErrorDialogDismissed = {},
         onRemoteURLEntry = {},
         onUsernameEntry = {},
         onPasswordEntry = {},

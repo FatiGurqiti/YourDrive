@@ -18,4 +18,6 @@
     <string name="auto_backup_dialog_message">"Allow YourDrive to store your Drive's credentials encrypted for automatic backup management. Your credentials will be encrypted, kept on a safe environment, and won't be accessible by third parties."</string>
     <string name="allow">Allow</string>
     <string name="decline">Decline</string>
+    <string name="error">Error</string>
+    <string name="ok">OK</string>
 </resources>

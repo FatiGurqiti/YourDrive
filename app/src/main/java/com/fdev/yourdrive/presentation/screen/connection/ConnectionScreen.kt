@@ -20,15 +20,18 @@ fun ConnectionScreen(
     )
 
     ConnectionContent(
-        showDialog = state.value.showDialog,
+        showBackupDialog = state.value.showBackupDialog,
+        showErrorDialog = state.value.showErrorDialog,
         autoBackupChecked = state.value.checkboxChecked,
         remoteURLError = state.value.remoteURLError,
+        errorDialogMessage = state.value.errorDialogMessage,
         remoteURL = state.value.remoteURL,
         username = state.value.username,
         password = state.value.password,
         onConnectClicked = { setEvent(ConnectionEvent.OnConnectClicked) },
-        onDialogConfirmed = { setEvent(ConnectionEvent.OnDialogConfirmed) },
-        onDialogDeclined = { setEvent(ConnectionEvent.OnDialogDeclined) },
+        onBackupDialogConfirmed = { setEvent(ConnectionEvent.OnBackupDialogConfirmed) },
+        onBackupDialogDeclined = { setEvent(ConnectionEvent.OnBackupDialogDeclined) },
+        onErrorDialogDismissed = { setEvent(ConnectionEvent.OnErrorDialogDismiss) },
         onRemoteURLEntry = { setEvent(ConnectionEvent.OnRemoteURLEntry(it)) },
         onUsernameEntry = { setEvent(ConnectionEvent.OnUsernameEntry(it)) },
         onPasswordEntry = { setEvent(ConnectionEvent.OnPasswordEntry(it)) },

@@ -1,7 +1,7 @@
 package com.fdev.yourdrive.di
 
 import android.content.Context
-import com.fdev.yourdrive.common.manager.backupManager.BackupManager
+import com.fdev.yourdrive.domain.manager.BackupManager
 import com.fdev.yourdrive.common.manager.backupManager.BackupManagerImpl
 import dagger.Module
 import dagger.Provides

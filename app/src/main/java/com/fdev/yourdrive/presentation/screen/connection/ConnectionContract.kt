@@ -6,9 +6,11 @@ import com.fdev.yourdrive.presentation.screen.base.ViewEvent
 import com.fdev.yourdrive.presentation.screen.base.ViewState
 
 data class ConnectionState(
-    val showDialog: Boolean = false,
+    val showErrorDialog: Boolean = false,
+    val showBackupDialog: Boolean = false,
     val checkboxChecked: Boolean = false,
     val remoteURLError: Boolean = false,
+    val errorDialogMessage: String = String.Empty,
     val remoteURL: String = String.Empty,
     val username: String = String.Empty,
     val password: String = String.Empty
@@ -16,8 +18,9 @@ data class ConnectionState(
 
 sealed class ConnectionEvent : ViewEvent() {
     data object OnConnectClicked : ConnectionEvent()
-    data object OnDialogConfirmed : ConnectionEvent()
-    data object OnDialogDeclined : ConnectionEvent()
+    data object OnErrorDialogDismiss : ConnectionEvent()
+    data object OnBackupDialogConfirmed : ConnectionEvent()
+    data object OnBackupDialogDeclined : ConnectionEvent()
     data class OnRemoteURLEntry(val value: String) : ConnectionEvent()
     data class OnUsernameEntry(val value: String) : ConnectionEvent()
     data class OnPasswordEntry(val value: String) : ConnectionEvent()
