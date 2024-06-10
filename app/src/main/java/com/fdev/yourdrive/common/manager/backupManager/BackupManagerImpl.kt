@@ -3,6 +3,7 @@ package com.fdev.yourdrive.common.manager.backupManager
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
+import com.fdev.yourdrive.common.util.addSlashIfNeeded
 import com.fdev.yourdrive.common.util.isSupportedFile
 import com.fdev.yourdrive.domain.enumeration.Result
 import com.fdev.yourdrive.domain.manager.BackupManager
@@ -27,6 +28,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
     }
 
     private lateinit var smbFile: SmbFile
+    private lateinit var networkAuth: NetworkAuth
 
     override suspend fun connect(networkAuth: NetworkAuth): Result {
         return try {
@@ -38,6 +40,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
                 val smbFile = SmbFile(networkAuth.remoteURL, ct)
 
                 createFileIfNeeded(networkAuth.remoteURL, smbFile, ct)
+                this@BackupManagerImpl.networkAuth = networkAuth
                 Result.SUCCESS
             }
         } catch (e: SmbAuthException) {
@@ -54,30 +57,33 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
             return
         }
 
-        val newURL = "${url}${FILE_NAME}"
+        var newURL = "${url}${FILE_NAME}"
+        val isChild = smbFile.listFiles().map { it.name }.contains(FILE_NAME)
+
+        if (isChild) {
+            newURL += FILE_NAME
+        }
+
         val newFolder = SmbFile(newURL, ct)
         if (!newFolder.exists()) newFolder.mkdir()
         newFolder.connect()
         this.smbFile = newFolder
     }
 
-    override suspend fun backup(networkAuth: NetworkAuth) {
-        getRemoteImages(networkAuth).collect { remoteImages ->
-            getLocalImages(context).collect { localImages ->
-                iterateFiles(localImages, remoteImages, networkAuth)
+    override suspend fun backup() {
+        withContext(Dispatchers.IO) {
+            getRemoteImages().collect { remoteImages ->
+                getLocalImages(context).collect { localImages ->
+                    iterateFiles(localImages, remoteImages)
+                }
             }
         }
     }
 
-    private fun getRemoteImages(networkAuth: NetworkAuth) = flow {
+    private fun getRemoteImages() = flow {
         try {
-            val baseCxt: CIFSContext = BaseContext(PropertyConfiguration(System.getProperties()))
-            val auth = NtlmPasswordAuthenticator(networkAuth.username, networkAuth.password)
-            val ct = baseCxt.withCredentials(auth)
-            val smbFile = SmbFile(networkAuth.remoteURL, ct)
-
             val images = smbFile.listFiles().filter { it.name.isSupportedFile() }
-            val imagesFile = images.map { it.name.replace("mytestfolder", "") }
+            val imagesFile = images.map { it.name.replace(FILE_NAME, "") }
 
             emit(imagesFile)
         } catch (e: Exception) {
@@ -105,14 +111,12 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
     private fun iterateFiles(
         localImages: List<MediaItem>,
         remoteImages: List<String>,
-        networkAuth: NetworkAuth
     ) {
         val images =
             localImages.filter { it.name !in remoteImages } // Don't add the already added images
 
         images.forEach {
             addToNetworkDrive(
-                networkAuth,
                 it.name ?: LocalDateTime.now().toString(),
                 it.path
             )
@@ -140,8 +144,8 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
         return mediaList.toList()
     }
 
-    private fun addToNetworkDrive(networkAuth: NetworkAuth, fileName: String, filePath: String) {
-        val remoteURL = "${networkAuth.remoteURL}/$fileName"
+    private fun addToNetworkDrive(fileName: String, filePath: String) {
+        val remoteURL = "${networkAuth.remoteURL.cdIfInParentFolder()}$fileName"
 
         val baseCxt: CIFSContext = BaseContext(PropertyConfiguration(System.getProperties()))
         val auth = NtlmPasswordAuthenticator(networkAuth.username, networkAuth.password)
@@ -172,5 +176,13 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
 
         inputStream.close()
         outputStream.close()
+    }
+
+    private fun String.cdIfInParentFolder(): String {
+        return if (!contains(FILE_NAME)) {
+            "${this.addSlashIfNeeded()}$FILE_NAME/"
+        } else {
+            this
+        }
     }
 }

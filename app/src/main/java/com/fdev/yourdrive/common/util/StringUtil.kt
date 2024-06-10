@@ -28,3 +28,8 @@ fun String.isSupportedFile(): Boolean {
 }
 
 fun String.setNullIfEmpty() = this.ifEmpty { null }
+
+fun String.addSlashIfNeeded(): String {
+    return if (last() == '/') this
+    else "$this/"
+}

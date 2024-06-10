@@ -5,5 +5,5 @@ import com.fdev.yourdrive.domain.model.NetworkAuth
 
 interface BackupManager {
     suspend fun connect(networkAuth: NetworkAuth): Result
-    suspend fun backup(networkAuth: NetworkAuth)
+    suspend fun backup()
 }
