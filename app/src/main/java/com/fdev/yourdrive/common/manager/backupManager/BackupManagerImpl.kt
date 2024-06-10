@@ -27,19 +27,23 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
         private const val FILE_NAME = "YourDrive"
     }
 
-    private lateinit var smbFile: SmbFile
     private lateinit var networkAuth: NetworkAuth
+    private lateinit var baseCxt: CIFSContext
+    private lateinit var auth: NtlmPasswordAuthenticator
+    private lateinit var cifsContext: CIFSContext
+    private lateinit var smbFile: SmbFile
 
     override suspend fun connect(networkAuth: NetworkAuth): Result {
         return try {
             withContext(Dispatchers.IO) {
-                val baseCxt: CIFSContext =
+                this@BackupManagerImpl.baseCxt =
                     BaseContext(PropertyConfiguration(System.getProperties()))
-                val auth = NtlmPasswordAuthenticator(networkAuth.username, networkAuth.password)
-                val ct = baseCxt.withCredentials(auth)
-                val smbFile = SmbFile(networkAuth.remoteURL, ct)
+                this@BackupManagerImpl.auth =
+                    NtlmPasswordAuthenticator(networkAuth.username, networkAuth.password)
+                this@BackupManagerImpl.cifsContext = baseCxt.withCredentials(auth)
+                val smbFile = SmbFile(networkAuth.remoteURL, cifsContext)
 
-                createFileIfNeeded(networkAuth.remoteURL, smbFile, ct)
+                createFileIfNeeded(networkAuth.remoteURL, smbFile, cifsContext)
                 this@BackupManagerImpl.networkAuth = networkAuth
                 Result.SUCCESS
             }
@@ -90,6 +94,9 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
             println("hajde: $e")
             //TODO("Send error to firebase")
             //TODO("Show error in UI")
+        }
+        finally {
+            emit(emptyList())
         }
     }
 
@@ -146,11 +153,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
 
     private fun addToNetworkDrive(fileName: String, filePath: String) {
         val remoteURL = "${networkAuth.remoteURL.cdIfInParentFolder()}$fileName"
-
-        val baseCxt: CIFSContext = BaseContext(PropertyConfiguration(System.getProperties()))
-        val auth = NtlmPasswordAuthenticator(networkAuth.username, networkAuth.password)
-        val ct = baseCxt.withCredentials(auth)
-        val destinationFile = SmbFile(remoteURL, ct)
+        val destinationFile = SmbFile(remoteURL, cifsContext)
 
         try {
             if (!destinationFile.exists()) {
