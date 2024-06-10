@@ -1,7 +1,9 @@
 package com.fdev.yourdrive.di
 
+import com.fdev.yourdrive.domain.manager.BackupManager
 import com.fdev.yourdrive.domain.repository.AppStateRepository
 import com.fdev.yourdrive.domain.usecase.GetFirstLoadUseCase
+import com.fdev.yourdrive.domain.usecase.NetworkDriveConnectionUseCase
 import com.fdev.yourdrive.domain.usecase.UpdateFirstLoadUseCase
 import dagger.Module
 import dagger.Provides
@@ -22,4 +24,9 @@ object DomainModule {
     @Provides
     fun providesUpdateFirstLoadUseCase(appStateRepository: AppStateRepository): UpdateFirstLoadUseCase =
         UpdateFirstLoadUseCase(appStateRepository)
+
+    @Singleton
+    @Provides
+    fun providesNetworkDriveConnectionUseCase(backupManager: BackupManager): NetworkDriveConnectionUseCase =
+        NetworkDriveConnectionUseCase(backupManager)
 }
