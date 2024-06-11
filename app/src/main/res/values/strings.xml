@@ -22,5 +22,5 @@
     <string name="ok">OK</string>
     <string name="thats_it">That\'s it! We\'ll handle the rest. You can close the app now</string>
     <string name="backup_in_progress">Backup in progress: %1$s</string>
-    <string name="backup_completed">You are all sync up!</string>
+    <string name="backup_completed">You are all synced up!</string>
 </resources>

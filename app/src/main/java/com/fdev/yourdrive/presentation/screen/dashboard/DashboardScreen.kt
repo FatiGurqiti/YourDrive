@@ -8,6 +8,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
+    DashboardEffect(
+        effectTag = viewModel.effectTag,
+        effect = viewModel.effect
+    )
+
     DashboardContent(
         backupCompleted = state.value.backupCompleted,
         showProgressBar = state.value.showProgressBar,
