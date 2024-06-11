@@ -99,7 +99,8 @@ fun ConnectionContent(
                     Text(stringResource(id = R.string.enter_password))
                 }
 
-                CheckboxField(isChecked = autoBackupChecked, onCheckedChange = onCheckboxChecked)
+                // TODO("I'll implement this later")
+//                CheckboxField(isChecked = autoBackupChecked, onCheckedChange = onCheckboxChecked)
             }
         }
 

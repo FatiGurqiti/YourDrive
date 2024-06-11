@@ -3,6 +3,7 @@ package com.fdev.yourdrive.common.manager.backupManager
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
+import com.fdev.yourdrive.common.util.FlowUtil
 import com.fdev.yourdrive.common.util.addSlashIfNeeded
 import com.fdev.yourdrive.common.util.isSupportedFile
 import com.fdev.yourdrive.domain.enumeration.Result
@@ -15,8 +16,13 @@ import jcifs.context.BaseContext
 import jcifs.smb.NtlmPasswordAuthenticator
 import jcifs.smb.SmbAuthException
 import jcifs.smb.SmbFile
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.time.LocalDateTime
@@ -74,11 +80,21 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
         this.smbFile = newFolder
     }
 
-    override suspend fun backup() {
+    override suspend fun backup() = channelFlow {
         withContext(Dispatchers.IO) {
-            getRemoteImages().collect { remoteImages ->
+            val progressContext = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            val flowUtil = FlowUtil<List<String>>()
+
+            flowUtil.onErrorEmptyOrCompletion(
+                request = getRemoteImages(),
+                action = { progressContext.cancel() }
+            ).collect { remoteImages ->
                 getLocalImages(context).collect { localImages ->
-                    iterateFiles(localImages, remoteImages)
+                    iterateFiles(localImages, remoteImages) {
+                        progressContext.launch {
+                            send(it)
+                        }
+                    }
                 }
             }
         }
@@ -94,8 +110,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
             println("hajde: $e")
             //TODO("Send error to firebase")
             //TODO("Show error in UI")
-        }
-        finally {
+        } finally {
             emit(emptyList())
         }
     }
@@ -118,15 +133,19 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
     private fun iterateFiles(
         localImages: List<MediaItem>,
         remoteImages: List<String>,
+        onNewItemAdded: (Double) -> Unit
     ) {
         val images =
             localImages.filter { it.name !in remoteImages } // Don't add the already added images
 
-        images.forEach {
+        images.forEachIndexed { index, it ->
             addToNetworkDrive(
                 it.name ?: LocalDateTime.now().toString(),
                 it.path
             )
+
+            val progress: Double = index.toDouble() / images.size.toDouble() * 100
+            onNewItemAdded(progress)
         }
     }
 
