@@ -133,7 +133,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
     private fun iterateFiles(
         localImages: List<MediaItem>,
         remoteImages: List<String>,
-        onNewItemAdded: (Double) -> Unit
+        onNewItemAdded: (Float) -> Unit
     ) {
         val images =
             localImages.filter { it.name !in remoteImages } // Don't add the already added images
@@ -144,7 +144,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
                 it.path
             )
 
-            val progress: Double = index.toDouble() / images.size.toDouble() * 100
+            val progress = index.toFloat() / images.size.toFloat() * 100
             onNewItemAdded(progress)
         }
     }

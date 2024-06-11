@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface BackupManager {
     suspend fun connect(networkAuth: NetworkAuth): Result
-    suspend fun backup(): Flow<Double>
+    suspend fun backup(): Flow<Float>
 }

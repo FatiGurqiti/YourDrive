@@ -1,9 +1,9 @@
 package com.fdev.yourdrive.common.util
 
-fun Double.decimalFormat(): String {
+fun Float.decimalFormat(): String {
     return "%.2f".format(this)
 }
 
-fun Double.toProgressStyle(): String {
+fun Float.toProgressStyle(): String {
     return "${decimalFormat()}%"
 }
