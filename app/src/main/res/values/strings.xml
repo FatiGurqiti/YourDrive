@@ -21,6 +21,9 @@
     <string name="error">Error</string>
     <string name="ok">OK</string>
     <string name="thats_it">That\'s it! We\'ll handle the rest. You can close the app now</string>
-    <string name="backup_in_progress">Backup in progress: %1$s</string>
-    <string name="backup_completed">You are all synced up!</string>
+    <string name="backup_preparing">Preparing for backup</string>
+    <string name="backup_in_progress_title">Backup in progress</string>
+    <string name="backup_in_progress_text">Your data is loading: %1$s</string>
+    <string name="backup_completed">Backup completed</string>
+    <string name="synced_up">You are all synced up!</string>
 </resources>

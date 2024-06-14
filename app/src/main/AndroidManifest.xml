@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
         android:name=".di.YourDriveApplication"
@@ -23,10 +25,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting"
         tools:targetApi="31">
+
+        <service
+            android:name=".data.service.BackupService"
+            android:foregroundServiceType="dataSync" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

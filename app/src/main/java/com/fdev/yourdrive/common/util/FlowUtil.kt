@@ -9,18 +9,20 @@ class FlowUtil<T> {
 
     fun onErrorEmptyOrCompletion(
         request: Flow<T>,
-        action: (cause: String?) -> Unit
+        action: (cause: String) -> Unit,
+        onEmptyMessage: String = String.Empty,
+        onCompletedMessage: String = String.Empty
     ): Flow<T> {
 
         val flow = request
             .catch {
-                action(it.message)
+                action(it.message ?: String.Empty)
             }
             .onEmpty {
-                action(null)
+                action(onEmptyMessage)
             }
             .onCompletion {
-                action(null)
+                action(onCompletedMessage)
             }
 
         return flow

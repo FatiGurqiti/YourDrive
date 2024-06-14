@@ -18,7 +18,7 @@ class DashboardViewModel @Inject constructor(
 
     init {
         DashboardEffect.RequireNotificationPermission.setEffect()
-        backup()
+//        backup()
     }
 
     override fun onEvent(event: DashboardEvent) {
