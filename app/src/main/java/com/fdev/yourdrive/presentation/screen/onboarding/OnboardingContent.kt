@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fdev.yourdrive.R
 import com.fdev.yourdrive.common.manager.permissionManager.PermissionManager
+import com.fdev.yourdrive.presentation.composable.logo.HexagonLogo
 
 @Composable
 fun OnboardingContent(
@@ -40,31 +42,46 @@ fun OnboardingContent(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceAround
     ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.oj),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = 44.sp
+            )
+
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.onboarding_welcome),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp
+            )
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(.8f)
                 .padding(horizontal = 40.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
 
-            Column {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.oj),
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 44.sp
-                )
-
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.onboarding_welcome),
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
-                )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(.4f)
+                        .fillMaxHeight(.2f),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    HexagonLogo()
+                }
             }
 
             Text(
@@ -117,9 +134,12 @@ fun OnboardingContent(
     }
 }
 
-
 @Preview(showSystemUi = true)
 @Composable
 fun OnboardingContentPreview() {
-    OnboardingContent(rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions(), onResult = {}))
+    OnboardingContent(
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = {})
+    )
 }
