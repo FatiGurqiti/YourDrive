@@ -5,7 +5,7 @@ import com.fdev.yourdrive.common.util.Empty
 import com.fdev.yourdrive.common.util.setNullIfEmpty
 import com.fdev.yourdrive.domain.enumeration.Result
 import com.fdev.yourdrive.domain.model.NetworkAuth
-import com.fdev.yourdrive.domain.usecase.NetworkDriveConnectionUseCase
+import com.fdev.yourdrive.domain.usecase.backup.NetworkDriveConnectionUseCase
 import com.fdev.yourdrive.presentation.screen.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

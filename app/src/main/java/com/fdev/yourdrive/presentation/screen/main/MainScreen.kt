@@ -16,9 +16,14 @@ fun MainScreen(viewModel: MainViewModel) {
         navController = navController
     )
 
-    MainLifeCycle {
-        setEvent(MainEvent.InitialPermissionCheck)
-    }
+    MainLifeCycle(
+        onPermissionsGranted = {
+            setEvent(MainEvent.SetPermissionsStatus(true))
+        },
+        onPermissionsNotGranted = {
+            setEvent(MainEvent.InitialPermissionCheck)
+        }
+    )
 
     MainContent(state, navController)
 }

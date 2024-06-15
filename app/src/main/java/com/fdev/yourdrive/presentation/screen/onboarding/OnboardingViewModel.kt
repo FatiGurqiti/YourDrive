@@ -1,7 +1,7 @@
 package com.fdev.yourdrive.presentation.screen.onboarding
 
 import androidx.lifecycle.viewModelScope
-import com.fdev.yourdrive.domain.usecase.UpdateFirstLoadUseCase
+import com.fdev.yourdrive.domain.usecase.firstLoad.UpdateFirstLoadUseCase
 import com.fdev.yourdrive.presentation.navigation.Screen
 import com.fdev.yourdrive.presentation.screen.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

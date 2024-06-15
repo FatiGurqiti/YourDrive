@@ -1,7 +1,7 @@
 package com.fdev.yourdrive.presentation.screen.main
 
 import androidx.lifecycle.viewModelScope
-import com.fdev.yourdrive.domain.usecase.GetFirstLoadUseCase
+import com.fdev.yourdrive.domain.usecase.firstLoad.GetFirstLoadUseCase
 import com.fdev.yourdrive.presentation.navigation.Screen
 import com.fdev.yourdrive.presentation.screen.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,7 +46,7 @@ class MainViewModel @Inject constructor(
 
     private fun initialPermissionCheck() {
         viewModelScope.launch {
-            if (!getFirstLoadUseCase()) {
+            if (!getFirstLoadUseCase()) { // Initial launch redirect to onboarding and the permission logic is handled there
                 MainEffect.CheckPermission.setEffect()
             }
         }

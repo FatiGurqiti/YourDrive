@@ -1,4 +1,4 @@
-package com.fdev.yourdrive.data.service
+package com.fdev.yourdrive.common.service
 
 import android.app.NotificationManager
 import android.app.Service
@@ -13,7 +13,8 @@ import com.fdev.yourdrive.common.Constant.Service.Backup.CHANNEL_ID
 import com.fdev.yourdrive.common.Constant.Service.Backup.NOTIFICATION_ID
 import com.fdev.yourdrive.common.util.FlowUtil
 import com.fdev.yourdrive.common.util.toProgressStyle
-import com.fdev.yourdrive.domain.manager.BackupManager
+import com.fdev.yourdrive.domain.service.BackupService
+import com.fdev.yourdrive.domain.usecase.backup.BackupUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,11 +24,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BackupService : Service() {
+class BackupServiceImpl : BackupService, Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @Inject
-    lateinit var backupManager: BackupManager
+    lateinit var backupUseCase: BackupUseCase
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -41,7 +42,8 @@ class BackupService : Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun start() {
+    override fun start() {
+
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.backup_in_progress_title))
             .setContentText(getString(R.string.backup_preparing))
@@ -52,41 +54,53 @@ class BackupService : Service() {
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val flowUtil = FlowUtil<Float>()
-
-        serviceScope.launch {
-            flowUtil.onErrorEmptyOrCompletion(
-                request = backupManager.backup(),
-                action = {
-                    serviceScope.cancel(it)
-                    stopSelf()
-                },
-                onEmptyMessage = getString(R.string.synced_up),
-                onCompletedMessage = getString(R.string.backup_completed)
-            ).collect {
-                val updatedNotification =
-                    notification.setContentText(
-                        getString(
-                            R.string.backup_in_progress_text,
-                            it.toProgressStyle()
-                        )
-                    ).setProgress(100, it.toInt(), false)
-
-                notificationManager.notify(NOTIFICATION_ID, updatedNotification.build())
-            }
-        }
+        backup(notification, notificationManager)
 
         startForeground(1, notification.build())
     }
 
-    private fun stop() {
-        stopForeground(true)
+    override fun stop() {
+        stopForeground(STOP_FOREGROUND_REMOVE)
         serviceScope.cancel()
         stopSelf()
     }
 
+    private fun backup(
+        notification: NotificationCompat.Builder,
+        notificationManager: NotificationManager
+    ) {
+        serviceScope.launch {
+            FlowUtil<Float>().onErrorEmptyOrCompletion(
+                request = backupUseCase(),
+                action = { stop() },
+                onEmptyMessage = getString(R.string.synced_up),
+                onCompletedMessage = getString(R.string.backup_completed)
+            ).collect {
+                updateBackupStatus(notification, it, notificationManager)
+            }
+        }
+    }
+
+    private fun updateBackupStatus(
+        notification: NotificationCompat.Builder,
+        progress: Float,
+        notificationManager: NotificationManager
+    ) {
+
+        val updatedNotification =
+            notification.setContentText(
+                getString(
+                    R.string.backup_in_progress_text,
+                    progress.toProgressStyle()
+                )
+            ).setProgress(100, progress.toInt(), false)
+
+        notificationManager.notify(NOTIFICATION_ID, updatedNotification.build())
+
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        serviceScope.cancel()
+        stop()
     }
 }

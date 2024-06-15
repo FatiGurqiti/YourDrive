@@ -27,7 +27,7 @@
         tools:targetApi="31">
 
         <service
-            android:name=".data.service.BackupService"
+            android:name=".common.service.BackupServiceImpl"
             android:foregroundServiceType="dataSync" />
 
         <activity

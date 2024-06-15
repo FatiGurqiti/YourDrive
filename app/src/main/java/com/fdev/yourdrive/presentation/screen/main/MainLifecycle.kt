@@ -8,13 +8,19 @@ import com.fdev.yourdrive.common.manager.permissionManager.PermissionManager.all
 import com.fdev.yourdrive.presentation.composable.manager.OnLifecycleEvent
 
 @Composable
-fun MainLifeCycle(onPermissionsNotGranted: () -> Unit) {
+fun MainLifeCycle(
+    onPermissionsGranted: () -> Unit,
+    onPermissionsNotGranted: () -> Unit
+) {
     val activity = LocalContext.current as Activity
 
     OnLifecycleEvent { _, event ->
         when (event) {
             Lifecycle.Event.ON_RESUME -> {
-                if (!activity.allPermissionsGranted()) {
+                if (activity.allPermissionsGranted()) {
+                    onPermissionsGranted()
+                }
+                else {
                     onPermissionsNotGranted()
                 }
             }

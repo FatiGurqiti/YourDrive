@@ -1,4 +1,4 @@
-package com.fdev.yourdrive.domain.usecase
+package com.fdev.yourdrive.domain.usecase.firstLoad
 
 import com.fdev.yourdrive.domain.repository.AppStateRepository
 

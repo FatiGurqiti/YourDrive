@@ -2,9 +2,10 @@ package com.fdev.yourdrive.di
 
 import com.fdev.yourdrive.domain.manager.BackupManager
 import com.fdev.yourdrive.domain.repository.AppStateRepository
-import com.fdev.yourdrive.domain.usecase.GetFirstLoadUseCase
-import com.fdev.yourdrive.domain.usecase.NetworkDriveConnectionUseCase
-import com.fdev.yourdrive.domain.usecase.UpdateFirstLoadUseCase
+import com.fdev.yourdrive.domain.usecase.backup.BackupUseCase
+import com.fdev.yourdrive.domain.usecase.firstLoad.GetFirstLoadUseCase
+import com.fdev.yourdrive.domain.usecase.backup.NetworkDriveConnectionUseCase
+import com.fdev.yourdrive.domain.usecase.firstLoad.UpdateFirstLoadUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,4 +30,9 @@ object DomainModule {
     @Provides
     fun providesNetworkDriveConnectionUseCase(backupManager: BackupManager): NetworkDriveConnectionUseCase =
         NetworkDriveConnectionUseCase(backupManager)
+
+    @Singleton
+    @Provides
+    fun providesBackupUseCase(backupManager: BackupManager): BackupUseCase =
+        BackupUseCase(backupManager)
 }

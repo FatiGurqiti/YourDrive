@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
     private fun setKeepSplashState(keepSplash: MutableState<Boolean>) {
         lifecycleScope.launch {
             viewModel.state.collect {
-                keepSplash.value = it.permissionsGiven != null && it.initialScreen != null
+                keepSplash.value = it.permissionsGiven == null || it.initialScreen == null
             }
         }
     }
