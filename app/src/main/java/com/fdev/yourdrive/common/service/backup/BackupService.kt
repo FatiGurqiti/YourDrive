@@ -48,7 +48,7 @@ class BackupService: Service() {
             .setContentTitle(getString(R.string.backup_in_progress_title))
             .setContentText(getString(R.string.backup_preparing))
             .setProgress(100, 0, true)
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSmallIcon(R.drawable.logo)
             .setOngoing(true)
             .addCancel(this)
 
@@ -111,7 +111,7 @@ class BackupService: Service() {
 
             addAction(
                 NotificationCompat.Action(
-                    androidx.core.R.drawable.ic_call_answer,
+                    R.drawable.cancel,
                     getString(R.string.stop),
                     cancelPendingIntent,
                 )
