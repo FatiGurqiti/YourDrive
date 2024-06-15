@@ -1,4 +1,4 @@
-package com.fdev.yourdrive.common.service
+package com.fdev.yourdrive.common.service.backup
 
 import android.app.NotificationManager
 import android.app.Service
@@ -13,8 +13,7 @@ import com.fdev.yourdrive.common.Constant.Service.Backup.CHANNEL_ID
 import com.fdev.yourdrive.common.Constant.Service.Backup.NOTIFICATION_ID
 import com.fdev.yourdrive.common.util.FlowUtil
 import com.fdev.yourdrive.common.util.toProgressStyle
-import com.fdev.yourdrive.domain.service.BackupService
-import com.fdev.yourdrive.domain.usecase.backup.BackupUseCase
+import com.fdev.yourdrive.domain.usecase.backupManager.BackupUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +23,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BackupServiceImpl : BackupService, Service() {
+class BackupService: Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @Inject
@@ -42,8 +41,7 @@ class BackupServiceImpl : BackupService, Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    override fun start() {
-
+    private fun start() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.backup_in_progress_title))
             .setContentText(getString(R.string.backup_preparing))
@@ -59,7 +57,7 @@ class BackupServiceImpl : BackupService, Service() {
         startForeground(1, notification.build())
     }
 
-    override fun stop() {
+    private fun stop() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         serviceScope.cancel()
         stopSelf()

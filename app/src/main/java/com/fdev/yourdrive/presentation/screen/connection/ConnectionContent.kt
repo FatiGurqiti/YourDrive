@@ -20,39 +20,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fdev.yourdrive.R
 import com.fdev.yourdrive.common.util.Empty
-import com.fdev.yourdrive.presentation.composable.checkbox.CheckboxField
+import com.fdev.yourdrive.presentation.composable.dialog.ErrorDialog
 import com.fdev.yourdrive.presentation.composable.editTextField.EditTextField
 import com.fdev.yourdrive.presentation.composable.editTextField.PasswordTextField
-import com.fdev.yourdrive.presentation.screen.connection.composable.ConnectionDialogs
 
 @Composable
 fun ConnectionContent(
-    showBackupDialog: Boolean,
     showErrorDialog: Boolean,
-    autoBackupChecked: Boolean,
     remoteURLError: Boolean,
     errorDialogMessage: String,
     remoteURL: String,
     username: String,
     password: String,
     onConnectClicked: () -> Unit,
-    onBackupDialogConfirmed: () -> Unit,
-    onBackupDialogDeclined: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
     onRemoteURLEntry: (String) -> Unit,
     onUsernameEntry: (String) -> Unit,
     onPasswordEntry: (String) -> Unit,
-    onCheckboxChecked: (Boolean) -> Unit,
 ) {
 
-    ConnectionDialogs(
-        errorDialogMessage = errorDialogMessage,
-        showErrorDialog = showErrorDialog,
-        showBackupDialog = showBackupDialog,
-        onErrorDialogDismissed = onErrorDialogDismissed,
-        onBackupDialogConfirmed = onBackupDialogConfirmed,
-        onBackupDialogDeclined = onBackupDialogDeclined
-    )
+    if (showErrorDialog) {
+        ErrorDialog(
+            onConfirmClicked = onErrorDialogDismissed,
+            errorMessage = errorDialogMessage
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -67,7 +59,7 @@ fun ConnectionContent(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Add network drive",
+                text = stringResource(id = R.string.connect_to_a_network_drive),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp
             )
@@ -98,9 +90,6 @@ fun ConnectionContent(
                 ) {
                     Text(stringResource(id = R.string.enter_password))
                 }
-
-                // TODO("I'll implement this later")
-//                CheckboxField(isChecked = autoBackupChecked, onCheckedChange = onCheckboxChecked)
             }
         }
 
@@ -117,21 +106,16 @@ fun ConnectionContent(
 @Composable
 fun ConnectionContentPreview() {
     ConnectionContent(
-        showBackupDialog = true,
         showErrorDialog = false,
-        autoBackupChecked = true,
         remoteURLError = true,
         errorDialogMessage = String.Empty,
         remoteURL = String.Empty,
         username = String.Empty,
         password = String.Empty,
         onConnectClicked = {},
-        onBackupDialogConfirmed = {},
-        onBackupDialogDeclined = {},
         onErrorDialogDismissed = {},
         onRemoteURLEntry = {},
         onUsernameEntry = {},
         onPasswordEntry = {},
-        onCheckboxChecked = {}
     )
 }

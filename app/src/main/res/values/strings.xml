@@ -27,4 +27,5 @@
     <string name="backup_completed">Backup completed</string>
     <string name="synced_up">You are all synced up!</string>
     <string name="stop">Stop</string>
+    <string name="connect_to_a_network_drive">Connect to a network drive</string>
 </resources>

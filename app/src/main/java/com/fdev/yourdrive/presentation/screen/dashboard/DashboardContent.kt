@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.fdev.yourdrive.R
 import com.fdev.yourdrive.common.Constant
 import com.fdev.yourdrive.common.util.toProgressStyle
-import com.fdev.yourdrive.common.service.BackupServiceImpl
+import com.fdev.yourdrive.common.service.backup.BackupService
 
 @Composable
 fun DashboardContent(
@@ -52,7 +52,7 @@ fun DashboardContent(
 
         Button(onClick = {
             context.applicationContext.apply {
-                Intent(this, BackupServiceImpl::class.java).apply {
+                Intent(this, BackupService::class.java).apply {
                     action = Constant.Service.Backup.ACTION_START
                     startService(this)
                 }
@@ -63,10 +63,10 @@ fun DashboardContent(
 
         Button(onClick = {
             context.applicationContext.apply {
-                Intent(this, BackupServiceImpl::class.java).apply {
-                    action = Constant.Service.Backup.ACTION_STOP
-                    startService(this)
-                }
+//                Intent(this, BackupServiceImpl::class.java).apply {
+//                    action = Constant.Service.Backup.ACTION_STOP
+//                    startService(this)
+//                }
             }
         }) {
             Text(text = "Stop backup service")

@@ -1,14 +1,21 @@
 package com.fdev.yourdrive.di
 
+import android.content.Context
+import com.fdev.yourdrive.common.service.backup.BackupServiceHelperImpl
 import com.fdev.yourdrive.domain.manager.BackupManager
 import com.fdev.yourdrive.domain.repository.AppStateRepository
-import com.fdev.yourdrive.domain.usecase.backup.BackupUseCase
+import com.fdev.yourdrive.domain.service.BackupServiceHelper
+import com.fdev.yourdrive.domain.usecase.backupManager.BackupUseCase
 import com.fdev.yourdrive.domain.usecase.firstLoad.GetFirstLoadUseCase
-import com.fdev.yourdrive.domain.usecase.backup.NetworkDriveConnectionUseCase
+import com.fdev.yourdrive.domain.usecase.backupManager.NetworkDriveConnectionUseCase
+import com.fdev.yourdrive.domain.usecase.backupService.BackupServiceUseCases
+import com.fdev.yourdrive.domain.usecase.backupService.StartBackupServiceUseCase
+import com.fdev.yourdrive.domain.usecase.backupService.StopBackupServiceUseCase
 import com.fdev.yourdrive.domain.usecase.firstLoad.UpdateFirstLoadUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -35,4 +42,27 @@ object DomainModule {
     @Provides
     fun providesBackupUseCase(backupManager: BackupManager): BackupUseCase =
         BackupUseCase(backupManager)
+
+    @Singleton
+    @Provides
+    fun providesBackupServiceHelper(@ApplicationContext context: Context): BackupServiceHelper =
+        BackupServiceHelperImpl(context)
+
+    @Singleton
+    @Provides
+    fun providesStartBackupServiceUseCase(backupServiceHelper: BackupServiceHelper): StartBackupServiceUseCase =
+        StartBackupServiceUseCase(backupServiceHelper)
+
+    @Singleton
+    @Provides
+    fun providesStopBackupServiceUseCase(backupServiceHelper: BackupServiceHelper): StopBackupServiceUseCase =
+        StopBackupServiceUseCase(backupServiceHelper)
+
+    @Singleton
+    @Provides
+    fun providesBackupServiceUseCases(
+        startBackupServiceUseCase: StartBackupServiceUseCase,
+        stopBackupServiceUseCase: StopBackupServiceUseCase
+    ): BackupServiceUseCases =
+        BackupServiceUseCases(startBackupServiceUseCase, stopBackupServiceUseCase)
 }

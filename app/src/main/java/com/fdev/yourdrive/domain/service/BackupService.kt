@@ -1,6 +1,6 @@
 package com.fdev.yourdrive.domain.service
 
-interface BackupService {
+interface BackupServiceHelper {
     fun start()
     fun stop()
 }
