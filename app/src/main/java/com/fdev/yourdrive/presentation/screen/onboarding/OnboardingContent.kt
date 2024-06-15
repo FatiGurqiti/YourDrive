@@ -98,7 +98,6 @@ fun OnboardingContent(
             }
         }
 
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -107,7 +106,7 @@ fun OnboardingContent(
             verticalAlignment = Alignment.Bottom
         ) {
             Button(onClick = {
-                permissionLauncher.launch(PermissionManager.permissions)
+                permissionLauncher.launch(PermissionManager.photosAndVideosPermissions)
             }) {
                 Text(
                     text = stringResource(R.string.lets_go),

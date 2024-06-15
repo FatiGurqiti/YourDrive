@@ -3,6 +3,7 @@ package com.fdev.yourdrive.presentation.screen.main
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import com.fdev.yourdrive.presentation.navigation.Screen
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
@@ -13,7 +14,10 @@ fun MainScreen(viewModel: MainViewModel) {
     MainEffect(
         effectTag = viewModel.effectTag,
         effect = viewModel.effect,
-        navController = navController
+        onPermissionDenied = {
+            setEvent(MainEvent.SetPermissionsStatus(false))
+            navController.navigate(Screen.Permission)
+        }
     )
 
     MainLifeCycle(

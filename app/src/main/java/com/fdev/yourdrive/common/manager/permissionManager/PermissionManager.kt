@@ -7,36 +7,66 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 
 object PermissionManager {
-    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(
-            Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.READ_MEDIA_VIDEO
-        )
-    } else {
-        arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-    }
+    val photosAndVideosPermissions =
+        when {
+            Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                arrayOf(
+                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED, // Access to photos and videos are allowed partially
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                )
+            }
 
-    fun Activity.allPermissionsGranted(): Boolean {
-        var allPermissionsGranted = true
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                arrayOf(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                )
+            }
 
-        for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    permission
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                allPermissionsGranted = false
-                break
+            else -> {
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
             }
         }
 
-        return allPermissionsGranted
+    fun Activity.allPermissionsGranted(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) checkPermissionForNewerAndroidVersions()
+        else checkPermissionForOlderAndroidVersions()
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun Activity.checkPermissionForNewerAndroidVersions(): Boolean {
+        for (permission in photosAndVideosPermissions) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    permission
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun Activity.checkPermissionForOlderAndroidVersions(): Boolean {
+        for (permission in photosAndVideosPermissions) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    permission
+                ) == PackageManager.PERMISSION_DENIED
+            ) {
+                return false
+            }
+        }
+        return true
     }
 
     fun Activity.openAppSettings() {
