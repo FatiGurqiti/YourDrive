@@ -14,8 +14,6 @@ fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
     )
 
     DashboardContent(
-        backupCompleted = state.value.backupCompleted,
-        showProgressBar = state.value.showProgressBar,
-        progress = state.value.progress
+        backupCompleted = state.value.backupCompleted
     )
 }

@@ -5,10 +5,7 @@ import com.fdev.yourdrive.presentation.screen.base.ViewEvent
 import com.fdev.yourdrive.presentation.screen.base.ViewState
 
 data class DashboardState(
-    val progress: Float = 0f,
-    val showProgressBar: Boolean = false,
-    val backupCompleted: Boolean = false,
-    val alreadySynced: Boolean = false
+    val backupCompleted: Boolean = false
 ) : ViewState()
 
 sealed class DashboardEvent : ViewEvent()
