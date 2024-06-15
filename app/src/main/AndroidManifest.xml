@@ -30,6 +30,15 @@
             android:name=".common.service.backup.BackupService"
             android:foregroundServiceType="dataSync" />
 
+        <receiver
+            android:name=".common.receiver.backup.CancelBackupServiceReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.fdev.yourdrive.CancelBackupServiceReceiver.ACTION_CANCEL" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

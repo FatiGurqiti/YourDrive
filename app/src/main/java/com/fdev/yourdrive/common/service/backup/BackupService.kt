@@ -1,6 +1,7 @@
 package com.fdev.yourdrive.common.service.backup
 
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import com.fdev.yourdrive.common.Constant.Service.Backup.ACTION_START
 import com.fdev.yourdrive.common.Constant.Service.Backup.ACTION_STOP
 import com.fdev.yourdrive.common.Constant.Service.Backup.CHANNEL_ID
 import com.fdev.yourdrive.common.Constant.Service.Backup.NOTIFICATION_ID
+import com.fdev.yourdrive.common.receiver.backup.CancelBackupServiceReceiver
 import com.fdev.yourdrive.common.util.FlowUtil
 import com.fdev.yourdrive.common.util.toProgressStyle
 import com.fdev.yourdrive.domain.usecase.backupManager.BackupUseCase
@@ -48,6 +50,7 @@ class BackupService: Service() {
             .setProgress(100, 0, true)
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setOngoing(true)
+            .addCancel(this)
 
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -94,7 +97,28 @@ class BackupService: Service() {
             ).setProgress(100, progress.toInt(), false)
 
         notificationManager.notify(NOTIFICATION_ID, updatedNotification.build())
+    }
 
+    private fun NotificationCompat.Builder.addCancel(context: Context): NotificationCompat.Builder {
+        context.apply {
+            val cancelIntent = Intent(this, CancelBackupServiceReceiver::class.java)
+            cancelIntent.action = ACTION_STOP
+
+            val cancelPendingIntent = PendingIntent.getBroadcast(
+                this, NOTIFICATION_ID,
+                cancelIntent, PendingIntent.FLAG_IMMUTABLE
+            )
+
+            addAction(
+                NotificationCompat.Action(
+                    androidx.core.R.drawable.ic_call_answer,
+                    getString(R.string.stop),
+                    cancelPendingIntent,
+                )
+            )
+
+            return this@addCancel
+        }
     }
 
     override fun onDestroy() {
