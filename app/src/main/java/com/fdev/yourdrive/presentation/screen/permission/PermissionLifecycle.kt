@@ -4,7 +4,7 @@ import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
-import com.fdev.yourdrive.common.manager.permissionManager.PermissionManager.allPermissionsGranted
+import com.fdev.yourdrive.common.manager.permission.PermissionManager.allPermissionsGranted
 import com.fdev.yourdrive.presentation.composable.manager.OnLifecycleEvent
 
 @Composable

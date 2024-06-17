@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fdev.yourdrive.R
-import com.fdev.yourdrive.common.manager.permissionManager.PermissionManager
+import com.fdev.yourdrive.common.manager.permission.PermissionManager
 import com.fdev.yourdrive.presentation.composable.logo.HexagonLogo
 
 @Composable

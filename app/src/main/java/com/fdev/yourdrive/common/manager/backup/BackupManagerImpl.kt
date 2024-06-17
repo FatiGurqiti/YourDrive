@@ -1,4 +1,4 @@
-package com.fdev.yourdrive.common.manager.backupManager
+package com.fdev.yourdrive.common.manager.backup
 
 import android.content.Context
 import android.database.Cursor
@@ -8,6 +8,7 @@ import com.fdev.yourdrive.common.util.addSlashIfNeeded
 import com.fdev.yourdrive.common.util.isSupportedFile
 import com.fdev.yourdrive.domain.enumeration.Result
 import com.fdev.yourdrive.domain.manager.BackupManager
+import com.fdev.yourdrive.domain.manager.CrashlyticsManager
 import com.fdev.yourdrive.domain.model.MediaItem
 import com.fdev.yourdrive.domain.model.NetworkAuth
 import jcifs.CIFSContext
@@ -27,7 +28,10 @@ import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.time.LocalDateTime
 
-class BackupManagerImpl(private val context: Context) : BackupManager {
+class BackupManagerImpl(
+    private val context: Context,
+    private val crashlyticsManager: CrashlyticsManager
+) : BackupManager {
 
     companion object {
         private const val FILE_NAME = "YourDrive"
@@ -54,8 +58,10 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
                 Result.SUCCESS
             }
         } catch (e: SmbAuthException) {
+            crashlyticsManager.logNonFatalException(e)
             Result.FAILED(e.message.toString())
         } catch (e: Exception) {
+            crashlyticsManager.logNonFatalException(e)
             Result.FAILED(e.message.toString())
         }
     }
@@ -107,9 +113,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
 
             emit(imagesFile)
         } catch (e: Exception) {
-            println("hajde: $e")
-            //TODO("Send error to firebase")
-            //TODO("Show error in UI")
+            crashlyticsManager.logNonFatalException(e)
         } finally {
             emit(emptyList())
         }
@@ -181,8 +185,7 @@ class BackupManagerImpl(private val context: Context) : BackupManager {
 
             writeToNetworkDrive(filePath, destinationFile)
         } catch (e: Exception) {
-            //TODO("Send error to firebase")
-            println("hajde Error: ${e.message}")
+            crashlyticsManager.logNonFatalException(e)
         }
     }
 

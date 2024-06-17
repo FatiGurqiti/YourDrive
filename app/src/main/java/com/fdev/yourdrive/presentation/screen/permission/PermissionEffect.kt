@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
-import com.fdev.yourdrive.common.manager.permissionManager.PermissionManager.openAppSettings
+import com.fdev.yourdrive.common.manager.permission.PermissionManager.openAppSettings
 import com.fdev.yourdrive.presentation.navigation.Screen
 import kotlinx.coroutines.flow.Flow
 

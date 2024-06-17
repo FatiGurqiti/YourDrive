@@ -1,4 +1,4 @@
-package com.fdev.yourdrive.common.manager.permissionManager
+package com.fdev.yourdrive.common.manager.permission
 
 import android.Manifest
 import android.app.Activity
