@@ -9,7 +9,7 @@ class FlowUtil<T> {
 
     fun onErrorEmptyOrCompletion(
         request: Flow<T>,
-        action: (cause: String) -> Unit,
+        action: suspend (cause: String) -> Unit,
         onEmptyMessage: String = String.Empty,
         onCompletedMessage: String = String.Empty
     ): Flow<T> {

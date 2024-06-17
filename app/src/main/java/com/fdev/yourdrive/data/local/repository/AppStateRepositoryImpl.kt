@@ -7,7 +7,7 @@ import com.fdev.yourdrive.domain.repository.AppStateRepository
 class AppStateRepositoryImpl(private val dataStore: PreferenceDataStore): AppStateRepository {
 
     companion object {
-        const val FIRST_LOAD = "firstLoad"
+        private const val FIRST_LOAD = "firstLoad"
     }
 
     override suspend fun isFirstLoad(): Boolean =

@@ -4,6 +4,7 @@ import android.content.Context
 import com.fdev.yourdrive.common.service.backup.BackupServiceHelperImpl
 import com.fdev.yourdrive.domain.manager.BackupManager
 import com.fdev.yourdrive.domain.repository.AppStateRepository
+import com.fdev.yourdrive.domain.repository.BackupStatusRepository
 import com.fdev.yourdrive.domain.service.BackupServiceHelper
 import com.fdev.yourdrive.domain.usecase.backupManager.BackupUseCase
 import com.fdev.yourdrive.domain.usecase.firstLoad.GetFirstLoadUseCase
@@ -11,6 +12,8 @@ import com.fdev.yourdrive.domain.usecase.backupManager.NetworkDriveConnectionUse
 import com.fdev.yourdrive.domain.usecase.backupService.BackupServiceUseCases
 import com.fdev.yourdrive.domain.usecase.backupService.StartBackupServiceUseCase
 import com.fdev.yourdrive.domain.usecase.backupService.StopBackupServiceUseCase
+import com.fdev.yourdrive.domain.usecase.backupStatus.GetBackupStatusUseCase
+import com.fdev.yourdrive.domain.usecase.backupStatus.SetBackupStatusUseCase
 import com.fdev.yourdrive.domain.usecase.firstLoad.UpdateFirstLoadUseCase
 import dagger.Module
 import dagger.Provides
@@ -65,4 +68,14 @@ object DomainModule {
         stopBackupServiceUseCase: StopBackupServiceUseCase
     ): BackupServiceUseCases =
         BackupServiceUseCases(startBackupServiceUseCase, stopBackupServiceUseCase)
+
+    @Singleton
+    @Provides
+    fun providesGetBackupStatusUseCase(backupStatusRepository: BackupStatusRepository): GetBackupStatusUseCase =
+        GetBackupStatusUseCase(backupStatusRepository)
+
+    @Singleton
+    @Provides
+    fun providesSetBackupStatusUseCase(backupStatusRepository: BackupStatusRepository): SetBackupStatusUseCase =
+        SetBackupStatusUseCase(backupStatusRepository)
 }

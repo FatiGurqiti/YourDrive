@@ -11,6 +11,7 @@ import com.fdev.yourdrive.domain.manager.BackupManager
 import com.fdev.yourdrive.domain.manager.CrashlyticsManager
 import com.fdev.yourdrive.domain.model.MediaItem
 import com.fdev.yourdrive.domain.model.NetworkAuth
+import com.fdev.yourdrive.domain.usecase.backupStatus.SetBackupStatusUseCase
 import jcifs.CIFSContext
 import jcifs.config.PropertyConfiguration
 import jcifs.context.BaseContext
@@ -23,6 +24,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
@@ -30,6 +32,7 @@ import java.time.LocalDateTime
 
 class BackupManagerImpl(
     private val context: Context,
+    private val setBackupStatusUseCase: SetBackupStatusUseCase,
     private val crashlyticsManager: CrashlyticsManager
 ) : BackupManager {
 
@@ -37,6 +40,7 @@ class BackupManagerImpl(
         private const val FILE_NAME = "YourDrive"
     }
 
+    private val progressScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private lateinit var networkAuth: NetworkAuth
     private lateinit var baseCxt: CIFSContext
     private lateinit var auth: NtlmPasswordAuthenticator
@@ -87,25 +91,18 @@ class BackupManagerImpl(
     }
 
     override suspend fun backup() = channelFlow {
-        withContext(Dispatchers.IO) {
-            val progressScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-            val flowUtil = FlowUtil<List<String>>()
+        val flowUtil = FlowUtil<List<String>>()
 
+        withContext(Dispatchers.IO) {
             flowUtil.onErrorEmptyOrCompletion(
                 request = getRemoteFiles(),
-                action = {
-                    progressScope.cancel()
-
-                }
-            ).collect { remoteFiles ->
-                getLocalFiles(context).collect { localFiles ->
-                    iterateFiles(localFiles, remoteFiles) {
-                        progressScope.launch {
-                            send(it)
-                        }
+                action = { onErrorEmptyOrCompletion() }
+            ).onStart { setBackupStatusUseCase(true) }
+                .collect {
+                    backupFiles(it) { progress ->
+                        send(progress)
                     }
                 }
-            }
         }
     }
 
@@ -119,6 +116,24 @@ class BackupManagerImpl(
             crashlyticsManager.logNonFatalException(e)
         } finally {
             emit(emptyList())
+        }
+    }
+
+    private suspend fun onErrorEmptyOrCompletion() {
+        setBackupStatusUseCase(false)
+        progressScope.cancel()
+    }
+
+    private suspend fun backupFiles(
+        remoteFiles: List<String>,
+        progressIteration: suspend (progress: Float) -> Unit
+    ) {
+        getLocalFiles(context).collect { localFiles ->
+            iterateFiles(localFiles, remoteFiles) {
+                progressScope.launch {
+                    progressIteration(it)
+                }
+            }
         }
     }
 
@@ -152,7 +167,11 @@ class BackupManagerImpl(
     }
 
     @Suppress("SameParameterValue")
-    private fun fileQuery(cursor: Cursor?, mediaData: String, mediaColumnsType: String): List<MediaItem> {
+    private fun fileQuery(
+        cursor: Cursor?,
+        mediaData: String,
+        mediaColumnsType: String
+    ): List<MediaItem> {
         val mediaList = mutableListOf<MediaItem>()
 
         if (cursor != null) {
