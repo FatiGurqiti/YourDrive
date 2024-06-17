@@ -49,6 +49,9 @@ class MainViewModel @Inject constructor(
             if (!getFirstLoadUseCase()) { // Initial launch redirect to onboarding and the permission logic is handled there
                 MainEffect.CheckPermission.setEffect()
             }
+            else {
+                setPermissionsStatus(false)
+            }
         }
     }
 
