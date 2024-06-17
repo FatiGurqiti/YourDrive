@@ -11,7 +11,6 @@ import com.fdev.yourdrive.domain.manager.BackupManager
 import com.fdev.yourdrive.domain.manager.CrashlyticsManager
 import com.fdev.yourdrive.domain.model.MediaItem
 import com.fdev.yourdrive.domain.model.NetworkAuth
-import com.fdev.yourdrive.domain.usecase.backupStatus.SetBackupStatusUseCase
 import jcifs.CIFSContext
 import jcifs.config.PropertyConfiguration
 import jcifs.context.BaseContext
@@ -24,7 +23,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
@@ -32,7 +30,6 @@ import java.time.LocalDateTime
 
 class BackupManagerImpl(
     private val context: Context,
-    private val setBackupStatusUseCase: SetBackupStatusUseCase,
     private val crashlyticsManager: CrashlyticsManager
 ) : BackupManager {
 
@@ -96,13 +93,12 @@ class BackupManagerImpl(
         withContext(Dispatchers.IO) {
             flowUtil.onErrorEmptyOrCompletion(
                 request = getRemoteFiles(),
-                action = { onErrorEmptyOrCompletion() }
-            ).onStart { setBackupStatusUseCase(true) }
-                .collect {
-                    backupFiles(it) { progress ->
-                        send(progress)
-                    }
+                action = { progressScope.cancel() }
+            ).collect {
+                backupFiles(it) { progress ->
+                    send(progress)
                 }
+            }
         }
     }
 
@@ -117,11 +113,6 @@ class BackupManagerImpl(
         } finally {
             emit(emptyList())
         }
-    }
-
-    private suspend fun onErrorEmptyOrCompletion() {
-        setBackupStatusUseCase(false)
-        progressScope.cancel()
     }
 
     private suspend fun backupFiles(

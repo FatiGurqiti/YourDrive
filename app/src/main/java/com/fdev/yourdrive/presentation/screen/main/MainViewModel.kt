@@ -1,6 +1,7 @@
 package com.fdev.yourdrive.presentation.screen.main
 
 import androidx.lifecycle.viewModelScope
+import com.fdev.yourdrive.domain.usecase.backupStatus.GetBackupStatusUseCase
 import com.fdev.yourdrive.domain.usecase.firstLoad.GetFirstLoadUseCase
 import com.fdev.yourdrive.presentation.navigation.Screen
 import com.fdev.yourdrive.presentation.screen.base.BaseViewModel
@@ -10,10 +11,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getFirstLoadUseCase: GetFirstLoadUseCase
+    private val getFirstLoadUseCase: GetFirstLoadUseCase,
+    private val getBackupStatusUseCase: GetBackupStatusUseCase,
 ) : BaseViewModel<MainState, MainEvent, MainEffect>() {
-
-    private val connectionActive = false // TODO("Implement this")
 
     init {
         setupInitialPage()
@@ -35,7 +35,7 @@ class MainViewModel @Inject constructor(
                 val screen: Any = when {
                     getFirstLoadUseCase() -> Screen.Onboarding
                     it.permissionsGiven == false -> Screen.Permission
-                    connectionActive -> Screen.Dashboard
+                    getBackupStatusUseCase() -> Screen.Dashboard
                     else -> Screen.Connection
                 }
 

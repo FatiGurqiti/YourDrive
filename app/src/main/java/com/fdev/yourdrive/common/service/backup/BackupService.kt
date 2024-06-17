@@ -16,20 +16,26 @@ import com.fdev.yourdrive.common.receiver.backup.CancelBackupServiceReceiver
 import com.fdev.yourdrive.common.util.FlowUtil
 import com.fdev.yourdrive.common.util.toProgressStyle
 import com.fdev.yourdrive.domain.usecase.backupManager.BackupUseCase
+import com.fdev.yourdrive.domain.usecase.backupStatus.SetBackupStatusUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BackupService: Service() {
+class BackupService : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @Inject
     lateinit var backupUseCase: BackupUseCase
+
+    @Inject
+    lateinit var setBackupStatusUseCase: SetBackupStatusUseCase
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -61,6 +67,7 @@ class BackupService: Service() {
     }
 
     private fun stop() {
+        setBackupStatus()
         stopForeground(STOP_FOREGROUND_REMOVE)
         serviceScope.cancel()
         stopSelf()
@@ -71,14 +78,14 @@ class BackupService: Service() {
         notificationManager: NotificationManager
     ) {
         serviceScope.launch {
-            FlowUtil<Float>().onErrorEmptyOrCompletion(
-                request = backupUseCase(),
-                action = { stop() },
-                onEmptyMessage = getString(R.string.synced_up),
-                onCompletedMessage = getString(R.string.backup_completed)
-            ).collect {
-                updateBackupStatus(notification, it, notificationManager)
-            }
+            FlowUtil<Float>()
+                .onErrorEmptyOrCompletion(
+                    request = backupUseCase(),
+                    action = { stop() },
+                    onEmptyMessage = getString(R.string.synced_up),
+                    onCompletedMessage = getString(R.string.backup_completed)
+                ).onStart { setBackupStatusUseCase(true) }
+                .collect { updateBackupStatus(notification, it, notificationManager) }
         }
     }
 
@@ -118,6 +125,12 @@ class BackupService: Service() {
             )
 
             return this@addCancel
+        }
+    }
+
+    private fun setBackupStatus(status: Boolean = false) {
+        runBlocking {
+            setBackupStatusUseCase(status)
         }
     }
 
