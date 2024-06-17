@@ -88,16 +88,19 @@ class BackupManagerImpl(
 
     override suspend fun backup() = channelFlow {
         withContext(Dispatchers.IO) {
-            val progressContext = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            val progressScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
             val flowUtil = FlowUtil<List<String>>()
 
             flowUtil.onErrorEmptyOrCompletion(
-                request = getRemoteImages(),
-                action = { progressContext.cancel() }
-            ).collect { remoteImages ->
-                getLocalImages(context).collect { localImages ->
-                    iterateFiles(localImages, remoteImages) {
-                        progressContext.launch {
+                request = getRemoteFiles(),
+                action = {
+                    progressScope.cancel()
+
+                }
+            ).collect { remoteFiles ->
+                getLocalFiles(context).collect { localFiles ->
+                    iterateFiles(localFiles, remoteFiles) {
+                        progressScope.launch {
                             send(it)
                         }
                     }
@@ -106,7 +109,7 @@ class BackupManagerImpl(
         }
     }
 
-    private fun getRemoteImages() = flow {
+    private fun getRemoteFiles() = flow {
         try {
             val images = smbFile.listFiles().filter { it.name.isSupportedFile() }
             val imagesFile = images.map { it.name.replace(FILE_NAME, "") }
@@ -119,48 +122,44 @@ class BackupManagerImpl(
         }
     }
 
-    private fun getLocalImages(context: Context) = flow {
+    private fun getLocalFiles(context: Context) = flow {
         val contentResolver = context.contentResolver
 
-        // Query for Images
+        val imageMediaData = MediaStore.Images.Media.DATA
+        val imageMediaColumnsType = MediaStore.Images.Media.DATA
+
+        val videoMediaData = MediaStore.Video.Media.DATA
+        val videoMediaColumnsType = MediaStore.Video.Media.DATA
+
         val imageCursor = contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            arrayOf(MediaStore.Images.Media.DATA, MediaStore.MediaColumns.MIME_TYPE),
+            arrayOf(imageMediaData, MediaStore.MediaColumns.MIME_TYPE),
             null,
             null,
             null
         )
 
-        emit(imageQuery(imageCursor))
+        val videoCursor = contentResolver.query(
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+            arrayOf(videoMediaData, MediaStore.MediaColumns.MIME_TYPE),
+            null,
+            null,
+            null
+        )
+
+        emit(fileQuery(imageCursor, imageMediaData, imageMediaColumnsType)) // Query for images
+        emit(fileQuery(videoCursor, videoMediaData, videoMediaColumnsType)) // Query for videos
     }
 
-    private fun iterateFiles(
-        localImages: List<MediaItem>,
-        remoteImages: List<String>,
-        onNewItemAdded: (Float) -> Unit
-    ) {
-        val images =
-            localImages.filter { it.name !in remoteImages } // Don't add the already added images
-
-        images.forEachIndexed { index, it ->
-            addToNetworkDrive(
-                it.name ?: LocalDateTime.now().toString(),
-                it.path
-            )
-
-            val progress = index.toFloat() / images.size.toFloat() * 100
-            onNewItemAdded(progress)
-        }
-    }
-
-    private fun imageQuery(cursor: Cursor?): List<MediaItem> {
+    @Suppress("SameParameterValue")
+    private fun fileQuery(cursor: Cursor?, mediaData: String, mediaColumnsType: String): List<MediaItem> {
         val mediaList = mutableListOf<MediaItem>()
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                val imageIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
+                val imageIndex = cursor.getColumnIndex(mediaData)
                 val imageMimeTypeIndex =
-                    cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
+                    cursor.getColumnIndex(mediaColumnsType)
 
                 if (imageIndex < 0 || imageMimeTypeIndex < 0) break
 
@@ -172,6 +171,25 @@ class BackupManagerImpl(
         }
 
         return mediaList.toList()
+    }
+
+    private fun iterateFiles(
+        localFiles: List<MediaItem>,
+        remoteFiles: List<String>,
+        onNewItemAdded: (Float) -> Unit
+    ) {
+        val files =
+            localFiles.filter { it.name !in remoteFiles } // Don't add the already added files
+
+        files.forEachIndexed { index, it ->
+            addToNetworkDrive(
+                it.name ?: LocalDateTime.now().toString(),
+                it.path
+            )
+
+            val progress = index.toFloat() / files.size.toFloat() * 100
+            onNewItemAdded(progress)
+        }
     }
 
     private fun addToNetworkDrive(fileName: String, filePath: String) {
