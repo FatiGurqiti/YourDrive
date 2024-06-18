@@ -1,4 +1,4 @@
-package com.fdev.yourdrive.di
+package com.fdev.yourdrive
 
 import android.app.Application
 import android.app.NotificationChannel
