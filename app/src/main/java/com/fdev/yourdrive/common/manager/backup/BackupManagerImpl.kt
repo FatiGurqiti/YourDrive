@@ -235,7 +235,7 @@ class BackupManagerImpl(
         return if (!contains(FILE_NAME)) {
             "${this.addSlashIfNeeded()}$FILE_NAME/"
         } else {
-            this
+            this.addSlashIfNeeded()
         }
     }
 }
